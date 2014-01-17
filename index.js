@@ -39,14 +39,21 @@ function getArgs(options) {
  */
 function compile(options) {
 
+  console.log( getArgs(options));
   var cp = require('child_process').spawn('sass', getArgs(options));
+
+  var chunks = "";
 
   cp.stdout.setEncoding('utf8');
   cp.stdout.on('data', function (data) {
     if (options.callback) {
-      options.callback(null, new Buffer(data).toString('utf8'));
+      chunks = chunks +  new Buffer(data).toString('utf8'); 
     }
   });
+  
+  cp.stdout.on('end', function() {
+    options.callback(null,chunks);
+  })
 
   cp.stderr.setEncoding('utf8');
   cp.stderr.on('data', function (data) {
